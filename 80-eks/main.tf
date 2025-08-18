@@ -3,7 +3,7 @@ module "eks" {
   version = "~> 21.0" # this is module version
 
   name               = "${var.project}-${var.environment}"
-  kubernetes_version = "1.32"
+  kubernetes_version = "1.33" #earlier it was 1.32 and was upgraded to 1.33
 
   addons = {
     coredns                = {}
@@ -34,7 +34,26 @@ module "eks" {
 
   # EKS Managed Node Group(s)
   eks_managed_node_groups = {
-    blue = {
+    # blue = {
+    #   # Starting on 1.30, AL2023 is the default AMI type for EKS managed node groups
+    #   ami_type       = "AL2023_x86_64_STANDARD" # user name is ec2-user
+    #   instance_types = ["m5.xlarge"]
+      
+    #   min_size     = 2
+    #   max_size     = 10
+    #   desired_size = 2
+
+    # }
+
+      #  iam_role_additional_policies = {
+      #    AmazonEBS = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
+      #    AmazonEFS = "arn:aws:iam::aws:policy/service-role/AmazonEFSCSIDriverPolicy"
+      #    AmazonEKSLoad = "arn:aws:iam::aws:policy/AmazonEKSLoadBalancingPolicy"
+      
+   #}
+    
+
+    green = {
       # Starting on 1.30, AL2023 is the default AMI type for EKS managed node groups
       ami_type       = "AL2023_x86_64_STANDARD" # user name is ec2-user
       instance_types = ["m5.xlarge"]
@@ -43,12 +62,22 @@ module "eks" {
       max_size     = 10
       desired_size = 2
 
-       iam_role_additional_policies = {
-         AmazonEBS = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
-         AmazonEFS = "arn:aws:iam::aws:policy/service-role/AmazonEFSCSIDriverPolicy"
-         AmazonEKSLoad = "arn:aws:iam::aws:policy/AmazonEKSLoadBalancingPolicy"
+      iam_role_additional_policies = {
+        AmazonEBS = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
+        AmazonEFS = "arn:aws:iam::aws:policy/service-role/AmazonEFSCSIDriverPolicy"
+        AmazonEKSLoad = "arn:aws:iam::aws:policy/AmazonEKSLoadBalancingPolicy"
+      }
+
+       taints = {
+         upgrade = {
+           key = "upgrade"
+           value  = "true"
+           effect = "NO_SCHEDULE"
+         }
+       } 
+    }
+
       
-   }
     }
     
   #    iam_role_additional_policies = {
@@ -57,6 +86,7 @@ module "eks" {
   #        AmazonEKSLoad = "arn:aws:iam::aws:policy/AmazonEKSLoadBalancingPolicy"
       
   #  }
+  
 
   tags = merge(
     local.common_tags,
