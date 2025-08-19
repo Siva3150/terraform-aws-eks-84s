@@ -90,19 +90,21 @@ pipeline {
                     }  
                 }
             }
-        }
+        
         stage('Trigger ALB') {
             steps {
                 script {
-                    build job: '70-frontend-alb', 
+                    build job: '70-frontend-alb'
                     propagate: false,  // even SG fails VPC will not be effected
                     wait: true // VPC will not wait for SG pipeline completion
                 }
             }
         }
 
-        
+             
     }
+
+    
 
     post { 
         always { 
@@ -117,3 +119,4 @@ pipeline {
         }
     }
 }
+
