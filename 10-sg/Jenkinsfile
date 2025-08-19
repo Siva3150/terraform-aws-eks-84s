@@ -86,8 +86,7 @@ pipeline {
                         script {
                             build job: '60-acm', 
                             propagate: false,  // even SG fails VPC will not be effected
-                            wait: false // VPC will not wait for SG pipeline completion
-                        }
+                            wait: true // frontend-alb will waits for completion of acm
                     }  
                 }
             }
@@ -97,7 +96,7 @@ pipeline {
                 script {
                     build job: '70-frontend-alb', 
                     propagate: false,  // even SG fails VPC will not be effected
-                    wait: false // VPC will not wait for SG pipeline completion
+                    wait: true // VPC will not wait for SG pipeline completion
                 }
             }
         }
