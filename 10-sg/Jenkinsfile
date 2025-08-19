@@ -25,42 +25,41 @@ pipeline {
     stages {
         stage('init') {
             steps {
-                script{
+                script {
                     withAWS(credentials: 'aws-creds', region: 'us-east-1') {
-                    sh """
-                       cd 10-sg 
-                       terraform init -reconfigure
-                    """
-                    }                    
-                }
-            }
-        }
-        stage('plan') {
-            steps {
-                script{
-                    withAWS(credentials: 'aws-creds', region: 'us-east-1') {
-                    sh """
-                       cd 10-sg 
-                       terraform plan
-                    """
-                    }   
+                        sh """
+                            cd 10-sg
+                            terraform init -reconfigure
+                        """
+                    }
                 }
             }
         }
 
-        stage('apply') {
+        stage('plan') {
             steps {
-                script{
+                script {
                     withAWS(credentials: 'aws-creds', region: 'us-east-1') {
-                    sh """
-                       cd 10-sg 
-                       terraform apply -auto-approve 
-                    """
-                    }   
+                        sh """
+                            cd 10-sg
+                            terraform plan
+                        """
+                    }
                 }
             }
         }
-        
+        stage('apply') {
+            steps {
+                script {
+                    withAWS(credentials: 'aws-creds', region: 'us-east-1') {
+                        sh """
+                            cd 10-sg
+                            terraform apply -auto-approve
+                        """
+                    }
+                }
+            }
+        }
         stage('Bastion EKS ACM ALB') {
             parallel {
                 stage('Trigger Bastion') {
@@ -86,26 +85,24 @@ pipeline {
                         script {
                             build job: '60-acm', 
                             propagate: false,  // even SG fails VPC will not be effected
-                            wait: true // frontend-alb will waits for completion of acm
+                            wait: true // VPC will not wait for SG pipeline completion
+                        }
                     }  
                 }
             }
-            }
-        
+        }
         stage('Trigger ALB') {
             steps {
                 script {
-                    build job: '70-frontend-alb',
+                    build job: '70-frontend-alb', 
                     propagate: false,  // even SG fails VPC will not be effected
                     wait: true // VPC will not wait for SG pipeline completion
                 }
             }
         }
 
-             
+        
     }
-
-    
 
     post { 
         always { 
@@ -120,4 +117,3 @@ pipeline {
         }
     }
 }
-
