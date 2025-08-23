@@ -7,9 +7,9 @@ variable "environment" {
 }
 
 variable "zone_id" {
-    default = "Z02186033QPSEMV5IIWBW"
+    default = "Z07771633R956JE564RLG"
 }
 
 variable "zone_name" {
-    default = "sivadevops.fun"
+    default = "sivadevops.space"
 }

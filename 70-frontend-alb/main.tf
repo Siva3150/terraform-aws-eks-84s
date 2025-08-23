@@ -36,7 +36,7 @@ resource "aws_lb_listener" "ingress_alb" {
 
 resource "aws_route53_record" "ingress_alb" {
   zone_id = var.zone_id 
-  name    = "${var.environment}.${var.zone_name}" #dev.sivadevops.fun 
+  name    = "${var.environment}.${var.zone_name}" #dev.sivadevops.space 
   type    = "A"
   allow_overwrite = true 
   
